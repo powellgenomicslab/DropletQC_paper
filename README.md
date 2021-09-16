@@ -6,7 +6,7 @@ We developed the [dropletQC R package](https://waltermuskovic.github.io/dropletQ
 
 The schematic below illustrates how the nuclear fraction score, in combination with total UMI counts, can be used to identify empty droplets and damaged cells.
 
-![Figure_1](https://github.com/powellgenomicslab/DropletQC/raw/main/figures/Figure_1.png)
+![Figure_1](https://github.com/powellgenomicslab/DropletQC_paper/raw/main/figures/Figure_1.png)
 
 To demonstrate the method on real-world data, we have applied it to four single cell RNA-seq datasets produced and made publicly available by 10x Genomics:
 
@@ -17,7 +17,7 @@ To demonstrate the method on real-world data, we have applied it to four single 
 
 The figure below illustrates how the method was applied to identify both empty droplets and damaged cells.
 
-![Figure_2](https://github.com/powellgenomicslab/DropletQC/raw/main/figures/Figure_2.png)
+![Figure_2](https://github.com/powellgenomicslab/DropletQC_paper/raw/main/figures/Figure_2.png)
 
 This repository contains the code used to produced all of the analysis and figures published in:
 [DropletQC: improved identification of empty droplets and damaged cells in single-cell RNA-seq data](https://doi.org/10.1101/2021.08.02.454717)
