@@ -9,5 +9,5 @@
 #$ -N supp_figures
 
 conda activate Seurat
-echo "Started running script to create supplementary figure 4 for the manuscript"
-Rscript supplementary_figure_4.R 
+echo "Started running script to create supplementary figure 8 for the manuscript"
+Rscript supplementary_figure_8.R 

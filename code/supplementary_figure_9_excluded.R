@@ -38,6 +38,6 @@ p1 <- ggplot(ed.prop, aes(fill=cell_status, y=percentage, x=accession)) +
   facet_wrap(dissociation_protocol ~ Preservation, scales='free', labeller = label_wrap_gen(multi_line=FALSE))
 
 # Save
-ggsave(filename = "figures/Figure_S8_excluded.png",plot = p1,device = "png",width = 35, height = 15,units = "cm")
-ggsave(filename = "figures/Figure_S8_excluded.pdf",plot = p1,device = "pdf",width = 35, height = 15,units = "cm")
+ggsave(filename = "figures/Figure_S9_excluded.png",plot = p1,device = "png",width = 35, height = 15,units = "cm")
+ggsave(filename = "figures/Figure_S9_excluded.pdf",plot = p1,device = "pdf",width = 35, height = 15,units = "cm")
 

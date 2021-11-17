@@ -6,8 +6,11 @@
 #$ -q short.q
 #$ -r yes
 #$ -l mem_requested=4G
-#$ -N supp_figures
+#$ -N supp_figure_2
 
-conda activate Seurat
-echo "Started running script to create supplementary figure 5 for the manuscript"
-Rscript supplementary_figure_5.R 
+
+echo "Started running scripts to create supplementary figure 5 for the manuscript"
+
+qsub get_cryo_microglia_data.R
+qsub -hold_jid get_data align_cryo_microglia_data.R
+Rscript plot_cryo_microglia_data.R

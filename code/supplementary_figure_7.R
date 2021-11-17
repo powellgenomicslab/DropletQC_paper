@@ -13,74 +13,41 @@
 suppressPackageStartupMessages({
   library(tidyverse)
   library(patchwork)
-  library(dropletQC)
 })
 
 
 
-# Load data --------------------------------------------------------------------
+# Figure S6 --------------------------------------------------------------------
 
-gbm5p <- readRDS(str_glue('data/GBM5p/seurat_SCT_anno_QC_filter.rds'))
-gbm5p <- gbm5p[[]] %>% arrange(desc(flag))
-
-ms <- readRDS(str_glue('data/MS/seurat_SCT_anno.rds'))
-ms <- ms[[]] %>% arrange(cell_status)
-
-
-
-# Percentages -------------------------------------------------------------
-
-# Get percentages for supplementary table
-
-# GBM
-table(gbm5p$flag)/nrow(gbm5p) * 100
-#         cell  damaged_cell empty_droplet 
-#92.448513      4.424104      3.127384 
-
-# MS
-table(ms$cell_status)/nrow(ms) * 100
-#cell  damaged_cell empty_droplet 
-#89.939252      7.641479      2.419269 
-
-
-# Figure S7 --------------------------------------------------------------------
-
-# Create plots showing damaged cells and empty droplets for the GBM 5' dataset
-# and mouse spleen 5' dataset
-
-p1 <- mutate(
-  gbm5p,
-  flag = case_when(
-    flag == "damaged_cell" ~ "damaged cell",
-    flag == "empty_droplet" ~ "empty droplet",
-    TRUE                      ~ "cell"
+nf <- lapply(c("ed", "enn", "cb", "cr"),
+             function(i) read_tsv(str_glue('data/{i}.tsv'))) %>%
+  do.call(rbind,.) %>%
+  filter(method=="EmptyDrops", param=="500") %>%
+  mutate(`MT%`=percent.mt) %>%
+  arrange(percent.mt)%>%
+  mutate(
+    sample_long = case_when(
+      sample == "MB" ~ "Mouse brain",
+      sample == "GBM" ~ "Glioblastoma",
+      sample == "HL" ~ "Hodgkin's lymphoma",
+      sample == "PBMC" ~ "PBMCs")
   )
-) %>%
-  ggplot(aes(x = nuclear_fraction_dropletQC,
-                                  y = log10(nCount_RNA), colour = flag)) +
-  geom_point() +
-  ggtitle("Glioblastoma 5'v1") +
-  scale_color_manual(values=c("#88419d", "#2166ac", "#b2182b")) +
-  labs(y="Log10(UMIs detected)", x = "Nuclear fraction") +
-  theme(legend.position = "left") +
-  theme(legend.title=element_blank())
 
-p2 <- mutate(
-  ms,
-  cell_status = case_when(
-    cell_status == "damaged_cell" ~ "damaged cell",
-    cell_status == "empty_droplet" ~ "empty droplet",
-    TRUE                      ~ "cell"
-  )
-) %>%
-  ggplot(aes(x = nuclear_fraction,
-                        y = log10(nCount_RNA), colour = cell_status)) +
-  geom_point() +
-  ggtitle("Mouse Splenocytes 5'v2") +
-  scale_color_manual(values=c("#88419d", "#2166ac", "#b2182b")) +
-  labs(y="Log10(UMIs detected)", x = "Nuclear fraction") +
-  theme(legend.position = "left") +
-  theme(legend.title=element_blank())
+p1 <- lapply(c("MB", "HL", "GBM", "PBMC"), function(i){
+  filter(nf, sample == i) %>%
+    ggplot(aes(x=nuclear_fraction, y=log10(nCount_RNA), colour=`MT%`)) +
+    geom_point() + 
+    labs(y="Log10(UMIs detected)", x = "Nuclear fraction") +
+    xlim(range(nf$nuclear_fraction)) +
+    facet_wrap(~ sample_long, labeller = label_wrap_gen(multi_line=FALSE), ncol = 2, scales = "free_y") +
+    scale_colour_viridis_c(limits=c(0, 50), oob = scales::squish)
+}) %>%
+wrap_plots(ncol=2)+ plot_annotation(tag_levels = 'a')
 
-ggsave(filename = str_glue('figures/Figure_S3.png'), plot = wrap_plots(p1,p2, ncol = 2, guides = "collect") + plot_annotation(tag_levels = 'a'), device = "png", width = 25, height = 10, units = "cm")
-ggsave(filename = str_glue('figures/Figure_S3.pdf'), plot = wrap_plots(p1,p2, ncol = 2, guides = "collect") + plot_annotation(tag_levels = 'a'), device = "pdf", width = 25, height = 10, units = "cm")
+ggsave("figures/Figure_S7.png",
+       plot = p1,
+       device = "png", width = 25,height = 20,units = "cm")
+
+ggsave("figures/Figure_S7.pdf",
+       plot = p1,
+       device = "pdf", width = 25,height = 20,units = "cm")
